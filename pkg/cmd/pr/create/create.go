@@ -635,7 +635,23 @@ func NewCreateContext(opts *CreateOptions) (*CreateContext, error) {
 		return nil, err
 	}
 
-	prRefs, err := shared.ParsePRRefs(targetHeadBranch, targetHeadBranchConfig, parsedPushRevision, pushDefault, remotePushDefault, targetBaseRepo, remotes)
+	var isRemoteBranchOnCorrectSha = func(remote, branch string) bool {
+		refs, _ := gitClient.ShowRefs(ctx, []string{"HEAD", fmt.Sprintf("refs/remotes/%s/%s", remote, branch)})
+		if len(refs) < 2 {
+			return false
+		}
+
+		return refs[0].Hash == refs[1].Hash
+	}
+
+	prRefs, err := shared.ParsePRRefs(
+		targetHeadBranch,
+		targetHeadBranchConfig,
+		parsedPushRevision, pushDefault, remotePushDefault,
+		targetBaseRepo,
+		remotes,
+		isRemoteBranchOnCorrectSha,
+	)
 	if err != nil {
 		return nil, err
 	}

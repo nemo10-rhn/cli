@@ -184,7 +184,7 @@ func (f *finder) Find(opts FindOptions) (*api.PullRequest, ghrepo.Interface, err
 				return nil, nil, err
 			}
 
-			prRefs, err = ParsePRRefs(f.branchName, branchConfig, parsedPushRevision, pushDefault, remotePushDefault, f.baseRefRepo, rems)
+			prRefs, err = ParsePRRefs(f.branchName, branchConfig, parsedPushRevision, pushDefault, remotePushDefault, f.baseRefRepo, rems, nil)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -205,7 +205,7 @@ func (f *finder) Find(opts FindOptions) (*api.PullRequest, ghrepo.Interface, err
 		} else {
 			f.branchName = opts.Selector
 			// We don't expect an error here because parsedPushRevision is empty
-			prRefs, err = ParsePRRefs(f.branchName, git.BranchConfig{}, "", "", "", f.baseRefRepo, remotes.Remotes{})
+			prRefs, err = ParsePRRefs(f.branchName, git.BranchConfig{}, "", "", "", f.baseRefRepo, remotes.Remotes{}, nil)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -321,7 +321,14 @@ func (f *finder) parseURL(prURL string) (ghrepo.Interface, int, error) {
 	return repo, prNumber, nil
 }
 
-func ParsePRRefs(currentBranchName string, branchConfig git.BranchConfig, parsedPushRevision string, pushDefault string, remotePushDefault string, baseRefRepo ghrepo.Interface, rems remotes.Remotes) (PullRequestRefs, error) {
+func ParsePRRefs(
+	currentBranchName string,
+	branchConfig git.BranchConfig,
+	parsedPushRevision, pushDefault, remotePushDefault string,
+	baseRefRepo ghrepo.Interface,
+	rems remotes.Remotes,
+	isRemoteBranchOnCorrectSha func(remote string, branch string) bool,
+) (PullRequestRefs, error) {
 	prRefs := PullRequestRefs{
 		BaseRepo: baseRefRepo,
 	}
@@ -381,6 +388,9 @@ func ParsePRRefs(currentBranchName string, branchConfig git.BranchConfig, parsed
 
 	// The PR merges from a branch in the same repo as the base branch (usually the default branch)
 	if prRefs.HeadRepo == nil {
+		if isRemoteBranchOnCorrectSha != nil && !isRemoteBranchOnCorrectSha(baseRefRepo.RepoHost(), prRefs.BranchName) {
+			return PullRequestRefs{}, fmt.Errorf("TODO: the base repo isn't in the right place for this")
+		}
 		prRefs.HeadRepo = baseRefRepo
 	}
 

@@ -130,7 +130,7 @@ func statusRun(opts *StatusOptions) error {
 				return err
 			}
 
-			prRefs, err := shared.ParsePRRefs(currentBranchName, branchConfig, parsedPushRevision, pushDefault, remotePushDefault, baseRefRepo, remotes)
+			prRefs, err := shared.ParsePRRefs(currentBranchName, branchConfig, parsedPushRevision, pushDefault, remotePushDefault, baseRefRepo, remotes, nil)
 			if err != nil {
 				return err
 			}
