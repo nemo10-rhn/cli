@@ -658,14 +658,19 @@ func NewCreateContext(opts *CreateOptions) (*CreateContext, error) {
 		return nil, err
 	}
 
-	// Ignoring the error here is ok, it only means we didn't find a remote.
-	baseRemote, _ := resolvedRemotes.RemoteForRepo(baseRepo)
-
 	// This closure provides an easy way to instantiate a CreateContext with everything other than
 	// the refs. This probably indicates that CreateContext could do with some rework, but the refactor
 	// to introduce PRRefs is already large enough.
 	var newCreateContext = func(refs refs) *CreateContext {
 		baseTrackingBranch := refs.BaseRef()
+
+		// The baseTrackingBranch is used later for a command like:
+		// `git commit upstream/main feature` in order to create a PR message showing the commits
+		// between these two refs. I'm not really sure what is expected to happen if we don't have a remote,
+		// which seems like it would be possible with a command `gh pr create --repo owner/repo-that-is-not-a-remote`.
+		// In that case, we might just have a mess? In any case, this is what the old code did, so I don't want to change
+		// it as part of an already large refactor.
+		baseRemote, _ := resolvedRemotes.RemoteForRepo(baseRepo)
 		if baseRemote != nil {
 			baseTrackingBranch = fmt.Sprintf("%s/%s", baseRemote.Name, baseTrackingBranch)
 		}
