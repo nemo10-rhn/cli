@@ -309,12 +309,14 @@ func newDefaultPushTarget(remote remote, branchName string) defaultPushTarget {
 // Firstly, it attempts to resolve the @{push} ref, which is the most reliable method, as this
 // is what git uses to determine the remote tracking branch
 //
-// If this fails, we go through a series of steps to determine the remote, firstly by checking
-// branch configuration which takes the form `branch.<name>.pushRemote = <name> | <url>`. If this is
-// not set, then we check the remote configuration, which is `remote.pushDefault = <name>`. Finally,
-// we check the branch configuration again for `branch.<name>.remote = <name> | <url>`.
-// If none of these are set, we indicate that we were unable to determine the remote by returning
-// a None value for the remote.
+// If this fails, we go through a series of steps to determine the remote:
+//
+// 1. check branch configuration for `branch.<name>.pushRemote = <name> | <url>`
+// 2. check remote configuration for `remote.pushDefault = <name>`
+// 3. check branch configuration for `branch.<name>.remote = <name> | <url>`
+//
+// If none of these are set, we indicate that we were unable to determine the
+// remote by returning a None value for the remote.
 //
 // The branch name is always set. The deafult configuration for push.default (current) indicates
 // that a git push should use the same remote branch name as the local branch name. If push.default
