@@ -1719,7 +1719,7 @@ func TestRemoteGuessing(t *testing.T) {
 			assert.Equal(t, "OTHEROWNER:feature", input["headRefName"].(string))
 		}))
 
-	ios, _, stdout, _ := iostreams.Test()
+	ios, _, _, _ := iostreams.Test()
 
 	opts := CreateOptions{
 		HttpClient: func() (*http.Client, error) {
@@ -1765,8 +1765,12 @@ func TestRemoteGuessing(t *testing.T) {
 
 	require.NoError(t, createRun(&opts))
 
-	// Then chosen remote is used for the PR head
-	assert.Equal(t, "https://github.com/OWNER/REPO/pull/12\n", stdout.String())
+	// Then guessed remote is used for the PR head,
+	// which annoyingly, is asserted above on the line:
+	// assert.Equal(t, "OTHEROWNER:feature", input["headRefName"].(string))
+	//
+	// This is because OTHEROWNER relates to the "origin" remote, which has a
+	// SHA that matches the HEAD ref in the `git show-ref` output.
 }
 
 func TestNoRepoCanBeDetermined(t *testing.T) {
