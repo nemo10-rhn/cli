@@ -327,11 +327,12 @@ func Test_deleteRun(t *testing.T) {
 
 func Test_gistDelete(t *testing.T) {
 	tests := []struct {
-		name      string
-		httpStubs func(*httpmock.Registry)
-		hostname  string
-		gistID    string
-		wantErr   error
+		name          string
+		httpStubs     func(*httpmock.Registry)
+		hostname      string
+		gistID        string
+		wantErr       error
+		wantErrString string
 	}{
 		{
 			name: "successful delete",
@@ -343,7 +344,6 @@ func Test_gistDelete(t *testing.T) {
 			},
 			hostname: "github.com",
 			gistID:   "1234",
-			wantErr:  nil,
 		},
 		{
 			name: "when an gist is not found, it returns a NotFoundError",
@@ -362,17 +362,15 @@ func Test_gistDelete(t *testing.T) {
 			httpStubs: func(reg *httpmock.Registry) {
 				reg.Register(
 					httpmock.REST("DELETE", "gists/1234"),
-					httpmock.StatusJSONResponse(500, `{"message": "arbitrary error"}`),
+					httpmock.StatusJSONResponse(500, ghAPI.HTTPError{
+						StatusCode: 500,
+						Message:    "arbitrary error",
+					}),
 				)
 			},
-			hostname: "github.com",
-			gistID:   "1234",
-			wantErr: api.HTTPError{
-				HTTPError: &ghAPI.HTTPError{
-					StatusCode: 500,
-					Message:    "arbitrary error",
-				},
-			},
+			hostname:      "github.com",
+			gistID:        "1234",
+			wantErrString: "HTTP 500: arbitrary error (https://api.github.com/gists/1234)",
 		},
 	}
 
@@ -383,8 +381,10 @@ func Test_gistDelete(t *testing.T) {
 			client := api.NewClientFromHTTP(&http.Client{Transport: reg})
 
 			err := deleteGist(client, tt.hostname, tt.gistID)
-			if tt.wantErr != nil {
-				assert.ErrorAs(t, err, &tt.wantErr)
+			if tt.wantErrString != "" {
+				assert.EqualError(t, err, tt.wantErrString)
+			} else if tt.wantErr != nil {
+				assert.ErrorIs(t, err, tt.wantErr)
 			} else {
 				assert.NoError(t, err)
 			}
