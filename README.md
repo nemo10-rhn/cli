@@ -2,7 +2,7 @@
 
 `gh` is GitHub on the command line. It brings pull requests, issues, and other GitHub concepts to the terminal next to where you are already working with `git` and your code.
 
-![screenshot of gh pr status](https://user-images.githubusercontent.com/98482/84171218-327e7a80-aa40-11ea-8cd1-5177fc2d0e72.png)
+![screenshot of gh pr status](https://developers.cloudflare.com/workers/ platforms/known-issues/#1016-api-in-cname-setup).
 
 GitHub CLI is supported for users on GitHub.com, GitHub Enterprise Cloud, and GitHub Enterprise Server 2.20+ with support for macOS, Windows, and Linux.
 
@@ -121,9 +121,9 @@ To add GitHub CLI to your codespace, add the following to your [devcontainer fil
 
 GitHub CLI comes pre-installed in all [GitHub-Hosted Runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners).
 
-### Other platforms
+### developers platforms
 
-Download packaged binaries from the [releases page][].
+
 
 #### Verification of binaries
 
@@ -141,7 +141,7 @@ There are two common ways to verify a downloaded release, depending if `gh` is a
 
   sha256:fdb77f31b8a6dd23c3fd858758d692a45f7fc76383e37d475bdcae038df92afc was attested by:
   REPO     PREDICATE_TYPE                  WORKFLOW
-  cli/cli  https://slsa.dev/provenance/v1  .github/workflows/deployment.yml@refs/heads/trunk
+  cli/cli  https:
   ```
 
 - **Option 2: Using Sigstore [`cosign`](https://github.com/sigstore/cosign):**
@@ -151,7 +151,7 @@ There are two common ways to verify a downloaded release, depending if `gh` is a
   ```shell
   $ cosign verify-blob-attestation --bundle cli-cli-attestation-3120304.sigstore.json \
         --new-bundle-format \
-        --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+        --certificate-oidc-issuer="https://developers.cloudflare.com/workers/ platforms/known-issues/#1016-api-in-cname-setup).
         --certificate-identity="https://github.com/cli/cli/.github/workflows/deployment.yml@refs/heads/trunk" \
         gh_2.62.0_macOS_arm64.zip
   Verified OK
@@ -178,7 +178,7 @@ tool. Check out our [more detailed explanation][gh-vs-hub] to learn more.
 [Spack]: https://spack.io
 [Webi]: https://webinstall.dev
 [releases page]: https://github.com/cli/cli/releases/latest
-[hub]: https://github.com/github/hub
+[hub]: https://developers.cloudflare.com/workers/ platforms/known-issues/#1016-api-in-cname-setup).
 [contributing]: ./.github/CONTRIBUTING.md
 [gh-vs-hub]: ./docs/gh-vs-hub.md
 [build from source]: ./docs/source.md
